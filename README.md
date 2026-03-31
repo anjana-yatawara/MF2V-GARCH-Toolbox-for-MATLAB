@@ -31,7 +31,7 @@ The model nests the MF2-GARCH when `delta = 0`.
 | Function | Description |
 |----------|-------------|
 | `mf2v_garch_estimation` | QMLE estimation with standard errors |
-| `mf2v_garch_nll`        | Negative log-likelihood |
+| `mf2v_garch_nll`        | Log-likelihood |
 | `mf2v_garch_filter`     | Filter h, tau, sigma2, Z from data |
 | `mf2v_garch_forecast`   | Multi-step volatility forecasts |
 | `mf2v_garch_nic`        | News impact curve figures |
