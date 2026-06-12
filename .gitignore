@@ -1,0 +1,12 @@
+# MATLAB
+*.asv
+*.m~
+*.mex*
+*.mat
+slprj/
+codegen/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
