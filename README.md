@@ -35,7 +35,9 @@ The model nests the MF2-GARCH when `delta = 0`.
 | `mf2v_garch_filter`     | Filter h, tau, sigma2, Z from data |
 | `mf2v_garch_forecast`   | Multi-step volatility forecasts |
 | `mf2v_garch_nic`        | News impact curve figures |
+| `mf2v_garch_simulate`   | Simulate returns from the model (exogenous or bootstrapped volume path) |
 | `volume_normalize`      | Normalize volume by its trailing average |
+| `replication/`          | Scripts that regenerate the paper's out-of-sample results (see below) |
 
 ## Quick start
 
@@ -66,9 +68,62 @@ Or simply run `example_mf2v_garch.m`.
 
 ## Data
 
-`data/SP500_daily.csv` contains daily S&P 500 adjusted close, volume, and
-log-returns (January 2000 onward). `data/_all_returns_vol.csv` contains daily
-returns and volume for the broader cross-section of assets used in the paper.
+`data/SP500_daily.csv` — daily S&P 500 data, columns `Date, AdjClose, Volume,
+LogRet`. **`LogRet` is in decimal units** (hence the `* 100` in the quick-start
+snippet above).
+
+`data/_all_returns_vol.csv` — long format keyed by `Ticker`, columns
+`Ticker, Sector, OBS, RET, Volume, AdjClose`. **`RET` is a log-return already
+in percent — do NOT multiply by 100.** Example:
+
+```matlab
+T = readtable(fullfile('data', '_all_returns_vol.csv'));
+idx  = strcmp(T.Ticker, 'XLK');
+y    = T.RET(idx);          % already percent
+vol  = T.Volume(idx);
+[coeff, se, pval] = mf2v_garch_estimation(y, vol, struct('m', 63));
+```
+
+The file contains 18 tickers. The paper uses the 16 with a complete
+January 2000 – March 2026 history (6,596 observations each): SP500, XLK, XLF,
+XLE, XLV, XLI, XLY, XLP, XLU, XLB, AAPL, MSFT, AMZN, JPM, XOM, JNJ. XLC and
+XLRE, launched after 2000, are included for completeness but are excluded
+from all results reported in the paper.
+
+Note on `foptions.choice = 'BIC'`: this convenience option performs a
+single-start BIC search over `m = 20:150` and differs from the paper's
+Table (grid `m = 21:7:161`, MultiStart, per-`m` LR tests); to reproduce the
+paper's m-selection table use the replication scripts below.
+
+## Replication of the paper's forecast evaluation
+
+The `replication/` folder regenerates the paper's out-of-sample results from
+the data shipped with this repository:
+
+| Script | Reproduces | Runtime |
+|--------|------------|---------|
+| `replication/run_oos_evaluation.m`   | The rolling-window out-of-sample evaluation: per-asset relative QLIKE / RMSE and Diebold–Mariano statistics (HAC + Harvey–Leybourne–Newbold correction + stationary-bootstrap p-values) at all 12 horizons — the paper's cross-sectional summary table and the per-asset appendix tables | several hours |
+| `replication/run_qlike_unfiltered.m` | The outlier-rule sensitivity analysis (QLIKE on the unfiltered origin set), run after `run_oos_evaluation.m` | minutes |
+| `replication/run_rolling_delta.m`    | The rolling delta-hat paths for XLP and AAPL (the boundary-reconciliation figure) | ~1–2 hours |
+
+Each script is self-contained, uses only the functions and data in this
+repository, and writes its outputs to `replication/output/`. Estimation uses
+`MultiStart` with per-origin seeds (`rng(1000+k)`), so results are
+reproducible up to the usual `fmincon` tolerance; forecast-evaluation
+statistics are seeded (`rng(42)`) and exactly reproducible given the
+estimated forecasts.
+
+The horse-race and portfolio-sort inputs are also included:
+`data/derived/` ships the liquidity measures (Amihud and Corwin–Schultz,
+normalized as in the paper), the three sets of sorted-portfolio return/volume
+series, the 238-stock universe list, and the institutional-ownership
+snapshot used in the paper. The raw OHLCV panels behind them (~180 MB) are
+not shipped, but `replication/python/` contains the exact builder scripts
+(yfinance) that regenerate them: `download_ohlcv_15assets.py`,
+`download_cross_section.py`, `build_liquidity_measures.py`,
+`build_sorted_portfolios.py`, and `build_instown.py` (ownership shares are
+current-values at retrieval; the shipped snapshot is the one used in the
+paper — see the caveat in the script header and in the paper's Section 8.2).
 
 ## References
 
