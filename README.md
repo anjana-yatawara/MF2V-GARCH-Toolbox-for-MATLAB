@@ -102,7 +102,7 @@ the data shipped with this repository:
 
 | Script | Reproduces | Runtime |
 |--------|------------|---------|
-| `replication/run_oos_evaluation.m`   | The rolling-window out-of-sample evaluation: per-asset relative QLIKE / RMSE and Diebold–Mariano statistics (HAC + Harvey–Leybourne–Newbold correction + stationary-bootstrap p-values) at all 12 horizons — the paper's cross-sectional summary table and the per-asset appendix tables | several hours |
+| `replication/run_oos_evaluation.m`   | The rolling-window out-of-sample evaluation: per-asset relative QLIKE / RMSE and Diebold–Mariano statistics (HAC + Harvey–Leybourne–Newbold correction + stationary-bootstrap p-values) at all 12 horizons; the paper's cross-sectional summary table and the per-asset appendix tables | several hours |
 | `replication/run_qlike_unfiltered.m` | The outlier-rule sensitivity analysis (QLIKE on the unfiltered origin set), run after `run_oos_evaluation.m` | minutes |
 | `replication/run_rolling_delta.m`    | The rolling delta-hat paths for XLP and AAPL (the boundary-reconciliation figure) | ~1–2 hours |
 
@@ -122,8 +122,8 @@ not shipped, but `replication/python/` contains the exact builder scripts
 (yfinance) that regenerate them: `download_ohlcv_15assets.py`,
 `download_cross_section.py`, `build_liquidity_measures.py`,
 `build_sorted_portfolios.py`, and `build_instown.py` (ownership shares are
-current-values at retrieval; the shipped snapshot is the one used in the
-paper — see the caveat in the script header and in the paper's Section 8.2).
+current values at retrieval; the shipped snapshot is the one used in the
+paper; see the note in the script header and in the paper's Section 8.2).
 
 ## References
 

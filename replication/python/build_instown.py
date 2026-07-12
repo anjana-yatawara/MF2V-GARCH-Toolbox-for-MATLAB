@@ -1,11 +1,11 @@
 """build_instown.py -- retrieve institutional-ownership shares for the
 cross-section universe via yfinance .info (field 'heldPercentInstitutions').
 
-NOTE (disclosed in the paper, Section 8.2): ownership shares are CURRENT
-values at retrieval time, not historical point-in-time values; yfinance
-does not provide an ownership history. The snapshot used in the paper is
-shipped as data/derived/cross_section_instown.csv (retrieved June 2026).
-Re-running this script will therefore produce slightly different values.
+Ownership shares are current values at retrieval time, not historical
+point-in-time values; yfinance does not provide an ownership history
+(see paper, Section 8.2). The snapshot used in the paper is shipped as
+data/derived/cross_section_instown.csv (retrieved June 2026), so
+re-running this script will produce slightly different values.
 
 Usage:  python build_instown.py
 Input:  data/derived/cross_section_meta.csv  (ticker universe)
